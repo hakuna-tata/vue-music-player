@@ -1,4 +1,4 @@
-# lf-music
+# fx-music
 
 > A Vue.js project
 
