@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="icon-search">
         sss
     </div>
 </template>
@@ -11,7 +11,5 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-    div{
-        font-size: $font-size-large-x;
-    }
+    
 </style>

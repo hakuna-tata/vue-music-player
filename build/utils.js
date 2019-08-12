@@ -39,7 +39,7 @@ exports.cssLoaders = function (options) {
             options: {
                 resources: [
                     path.resolve(__dirname, '../src/assets/scss/var.scss'),
-                    path.resolve(__dirname, '../src/assets/scss/mixins.scss')
+                    path.resolve(__dirname, '../src/assets/scss/mixin.scss')
                 ]
             }
         }
