@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { HOST } from '../utils/config'
+import { HOST } from '@/utils/config'
 
 export function getBanner () {
     const url = HOST + '/banner'

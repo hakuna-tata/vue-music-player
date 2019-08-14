@@ -1,12 +1,12 @@
 <template>
     <div class="recommend" ref="recommend">
-        <scroll class="recommend-content" ref="scroll" :data="playList">
+        <scroll class="recommend-content" ref="scroll" :data="playList.concat(recommendMusic)">
             <div>
                 <div v-show="banner.length" class="decorate" v-if="banner.length"></div>
                 <div v-if="banner.length" class="slider-wrapper" ref="sliderWrapper">
                     <slider>
                         <div v-for="item in banner" :key="item.id" @click.stop="selectBanner(item)">
-                            <img @load="loadImage" :src="item.imageUrl">
+                            <img :src="item.imageUrl">
                         </div>
                     </slider>
                 </div>
@@ -40,6 +40,9 @@
                         </li>
                     </ul>
                 </div>
+                <div class="loading-container" v-show="!playList.length">
+                    <loading></loading>
+                </div>
             </div>
         </scroll>
          <router-view></router-view>
@@ -49,11 +52,12 @@
 <script>
 import Scroll from '@/base/scroll/scroll';
 import Slider from '@/base/slider/slider';
+ import Loading from '@/base/loading/loading';
 import {getBanner, getRecommendList, getRecommendMusic} from '@/api/recommend';
-import {createRecommendSong} from '@/utils/song'
+import {createRecommendSong} from '@/utils/song';
 import {ERR_OK} from '@/utils/config'
 export default {
-    components:{Scroll,Slider},
+    components:{Scroll,Slider,Loading},
     data(){
         return{
             banner: [],
@@ -67,12 +71,6 @@ export default {
         },
         selectSong(item){
 
-        },
-        loadImage() {
-            if (!this.checkloaded) {
-                this.checkloaded = true
-                this.$refs.scroll.refresh()
-            }
         },
         _getBanner () {
             getBanner().then((res) => {
@@ -108,7 +106,9 @@ export default {
     created(){
         this._getBanner()
         this._getRecommendList()
-        this._getRecommendMusic()
+        setTimeout(() => {
+            this._getRecommendMusic()
+        },1000)
     }
 }
 </script>
@@ -250,6 +250,13 @@ export default {
                         color: $color-text-g;
                     }
                 }
+            }
+
+            .loading-container{
+                position: absolute;
+                width: 100%;
+                top: 50%;
+                transform: translateY(-50%)
             }
         }   
     }
