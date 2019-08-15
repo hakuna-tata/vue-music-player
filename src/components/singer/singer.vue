@@ -22,7 +22,7 @@ export default {
     },
     methods:{
         selectSinger(singer){
-
+            this.$router.push({path:`/singer/${singer.id}`})
         },
         _getSingers(){
             getSingers().then((res) => {
