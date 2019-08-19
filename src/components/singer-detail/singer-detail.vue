@@ -7,9 +7,7 @@
             </div>
             <div class="bg-image" :style="bgStyle" ref="bgImage">
                 <div class="filter"></div>
-                <div class="text">
-                    <h2 class="list-title">{{headerTitleTouchDown}}</h2>
-                </div>
+                <h1 class="list-title">{{headerTitleTouchDown}}</h1>
             </div>
             <scroll class="list"
                 @scroll="scroll"
@@ -80,26 +78,27 @@ export default {
             this.listDetail = this._normalizeSongs(val)
         },
         scrollY (newY) {
-            console.log(newY)
             const percent = Math.abs(newY / this.imageHeight);
             let scale = 1;
             let zIndex = 0;
             if(newY > 0){
                 scale = 1 + percent;
                 zIndex = 10;
-                this.headerTitle = "";
-                this.$refs.back.style.background = `rgba(212, 68, 57, 0)`;   
+                this.$refs.back.style.background = `rgba(212, 68, 57, 0)`; 
+                
             }else{
-                this.headerTitle = this.headerTitleTouchDown;
-                this.$refs.back.style.background = `rgba(212, 68, 57, ${percent})`
+                this.$refs.back.style.background = `rgba(212, 68, 57, ${percent})`;
             }
+
             if (newY < this.minTranslateY) {
-                this.$refs.bgImage.style.paddingTop = 0
-                this.$refs.bgImage.style.height = `${RESERVED_HEIGHT}px`
+                this.headerTitle = this.headerTitleTouchDown;
+                this.$refs.bgImage.style.paddingTop = 0;
+                this.$refs.bgImage.style.height = `${RESERVED_HEIGHT}px`;
                 
             }else {
-                this.$refs.bgImage.style.paddingTop = '70%'
-                this.$refs.bgImage.style.height = 0
+                this.headerTitle = "";
+                this.$refs.bgImage.style.paddingTop = '70%';
+                this.$refs.bgImage.style.height = 0;
                 
             }
             this.$refs.bgImage.style[transform] = `scale(${scale})`;
@@ -211,21 +210,14 @@ export default {
                 opacity: 0.2;
             }
 
-            .text {
-                position: absolute;
-                width: 80%;
-                height: 40px;
-                bottom: 40px;
-                left: 20px;
+            .list-title {
                 color: #fff;
-                .list-title {
-                    position: absolute;
-                    bottom: 0;
-                    font-size: $font-size-large-s;
-                    line-height: 18px;
-                    font-weight: bold;
-                    letter-spacing: 1px;
-                }
+                position: absolute;
+                left: 20px;
+                bottom: 10%;
+                font-size: $font-size-large-s;
+                font-weight: bold;
+                letter-spacing: 1px;
             }
         }
     }
