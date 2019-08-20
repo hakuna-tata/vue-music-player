@@ -1,8 +1,8 @@
 <template>
     <transition name="slide">
         <div class="music-list">
-            <div class="back" @click="back" ref="back">
-                <i class="iconfont icon-fanhui"></i>
+            <div class="back" ref="back">
+                <i class="iconfont icon-fanhui" @click="back"></i>
                 <h1 class="title">{{headerTitle}}</h1>
             </div>
             <div class="bg-image" :style="bgStyle" ref="bgImage">
@@ -15,15 +15,13 @@
                 :listen-scroll="listenScroll"
                 :data="listDetail"
                 ref="list">
-                <div class="music-list-wrapper">
-                    <div class="song-list-wrapper">
-                        <div class="sequence-play" v-show="listDetail.length" @click="sequence">
-                            <i class="iconfont icon-zanting"></i>
-                            <span class="text">播放全部</span>
-                            <span class="count">(共{{listDetail.length}}首)</span>
-                        </div>
-                        <song-list @select="selectItem" :songs="listDetail"></song-list>
+                <div class="song-list-wrapper">
+                    <div class="sequence-play" v-show="listDetail.length" @click="sequence">
+                        <i class="iconfont icon-zanting"></i>
+                        <span class="text">播放全部</span>
+                        <span class="count">(共{{listDetail.length}}首)</span>
                     </div>
+                    <song-list @select="selectItem" :songs="listDetail"></song-list>
                 </div>
                 <div class="loading-content" v-show="!listDetail.length">
                     <loading></loading>
@@ -106,6 +104,10 @@ export default {
         }
     },
     methods:{
+        ...mapActions([
+            'selectPlay',
+            'sequencePlay'
+        ]),
         back(){
             this.$router.back()
         },
@@ -113,10 +115,16 @@ export default {
             this.scrollY = pos.y
         },
         sequence(){
-
+            let list = this.listDetail
+            this.sequencePlay({
+                list: list
+            })
         },
-        selectItem(item){
-
+        selectItem(item,index){
+            this.selectPlay({
+                list: this.listDetail,
+                index: index
+            })
         },
         _getDetail () {
             if (!this.singer.id) {
@@ -144,7 +152,6 @@ export default {
     mounted(){
         this.imageHeight = this.$refs.bgImage.clientHeight;
         this.minTranslateY = -this.imageHeight + RESERVED_HEIGHT;
-        this.$refs.list.$el.style.top = `${this.imageHeight}px`;
     }
 }
 </script>
@@ -158,8 +165,11 @@ export default {
     }
 
     .loading-content {
-        width: 100%;
-        height: 100%;
+        position: absolute;
+        left:50%;
+        top:50%;
+        transform: translate(-50%,-50%);
+
     }
     .music-list {
         position: fixed;
@@ -194,7 +204,6 @@ export default {
         .bg-image {
             position: relative;
             width: 100%;
-            height: 0;
             padding-top: 70%;
             transform-origin: top;
             background-size: cover;
@@ -211,48 +220,50 @@ export default {
             }
 
             .list-title {
-                color: #fff;
+                color: $color-background;
                 position: absolute;
-                left: 20px;
+                left:15px;
                 bottom: 10%;
                 font-size: $font-size-large-s;
                 font-weight: bold;
                 letter-spacing: 1px;
             }
         }
-    }
 
-    .list {
-        position: fixed;
-        top: 0;
-        bottom: 0;
-        width: 100%;
-        background: $color-background;
-
-        .song-list-wrapper {
-            position: relative;
-            background: $color-background;
-
-            .sequence-play {
-                display: flex;
-                align-items: center;
-                width: 100%;
-                height: 50px;
-                padding-left: 16px;
-                border-bottom: 1px solid rgb(228, 228, 228);
-                .iconfont {
-                    font-size: 18px;
-                    color: $color-text;
-                    padding-right: 14px;
-                }
-                .text {
-                    font-size: $font-size-medium-x;
-                }
-                .count {
-                    font-size: $font-size-medium;
-                    color: $color-text-g;
+        .list {
+            position: fixed;
+            bottom: 0;
+            top:70vw;
+            width: 100%;
+            .song-list-wrapper {
+                position: relative;
+                background: $color-background;
+                border-top-left-radius: 10px;
+                border-top-right-radius: 10px;
+                .sequence-play {
+                    display: flex;
+                    align-items: center;
+                    width: 100%;
+                    height: 50px;
+                    padding-left: 16px;
+                    box-sizing: border-box;
+                    border-bottom: 1px solid rgb(228, 228, 228);
+                    .iconfont {
+                        font-size: 18px;
+                        color: $color-text;
+                        padding-right: 14px;
+                    }
+                    .text {
+                        font-size: $font-size-medium-x;
+                    }
+                    .count {
+                        font-size: $font-size-medium;
+                        color: $color-text-g;
+                    }
                 }
             }
         }
     }
+
+    
 </style>
