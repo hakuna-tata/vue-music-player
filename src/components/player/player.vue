@@ -21,9 +21,12 @@
                                     <img :src="currentSong.image" class="image">
                                 </div>
                             </div>
+                            <div class="playing-lyric-wrapper">
+                                <div class="playing-lyric">{{playingLyric}}</div>
+                            </div>
                         </div>
                     </transition>
-                    <!-- <transition name="middleR">
+                    <transition name="middleR">
                         <scroll class="middle-r" ref="lyricList" v-show="currentShow === 'lyric'" :data="currentLyric && currentLyric.lines">
                             <div class="lyric-wrapper">
                                 <div class="currentLyric" v-if="currentLyric">
@@ -35,7 +38,7 @@
                                 <p class="no-lyric" v-if="currentLyric === null">{{upDatecurrentLyric}}</p>
                             </div>
                         </scroll>
-                    </transition> -->
+                    </transition>
                 </div>
                 <div class="bottom">
                     <div class="progress-wrapper">
@@ -59,7 +62,7 @@
                             <i class="iconfont icon-ffw" @click="next"></i>
                         </div>
                         <div class="icon i-right">
-                            <i class="iconfont"  @click="toggleFavorite(currentSong)" :class="getFavoriteIcon(currentSong)"></i>
+                            <i class="iconfont icon-like"  @click="toggleFavorite(currentSong)" :class="getFavoriteIcon(currentSong)"></i>
                         </div>
                     </div>
                 </div>
@@ -94,6 +97,7 @@ import ProgressCircle from '@/base/progress-circle/progress-circle';
 import ProgressBar from '@/base/progress-bar/progress-bar';
 import Scroll from '@/base/scroll/scroll';
 import Playlist from '@/components/play-list/play-list';
+import Lyric from 'lyric-parser';
 import {playMode} from '@/utils/config';
 import {shuffle} from '@/utils/utl';
 import {mapGetters, mapMutations, mapActions} from 'vuex';
@@ -148,7 +152,7 @@ export default {
             }
             this.$refs.audio.pause();
             this.$refs.audio.currentTime = 0;
-            this._getSong(newVal.id)
+            this._getSongInfo(newVal.id)
         },
         url(newUrl){
             this.$refs.audio.src = newUrl;
@@ -204,11 +208,21 @@ export default {
         open () {
             this.setFullScreen(true)
         },
+        changeMiddle(){
+            if (this.currentShow === 'cd') {
+                this.currentShow = 'lyric'
+            } else {
+                this.currentShow = 'cd'
+            }
+        },
         togglePlaying(){
             if (!this.songReady) {
                 return
             }
-            this.setPlayingState(!this.playing);
+            this.setPlayingState(!this.playing)
+            if (this.currentLyric) {
+                this.currentLyric.togglePlay()
+            }
         },
         changeMode(){
             const mode = (this.mode + 1) % 3;
@@ -264,6 +278,9 @@ export default {
             this.$refs.audio.currentTime = 0
             this.$refs.audio.play()
             this.setPlayingState(true)
+            if (this.currentLyric) {
+                this.currentLyric.seek(0)
+            }
         },
         ready () {
             this.songReady = true
@@ -291,13 +308,13 @@ export default {
             return minute + ':' + second
         },
         onProgressBarChange(percent){
-           this.$refs.audio.currentTime = this.duration * percent;
+            this.$refs.audio.currentTime = this.duration * percent;
             if (!this.playing) {
                 this.togglePlaying()
             }
-        },
-        changeMiddle(){
-
+            if (this.currentLyric) {
+                this.currentLyric.seek(this.duration * percent * 1000)
+            }
         },
         toggleFavorite(){
 
@@ -308,10 +325,45 @@ export default {
         showPlaylist(){
             this.$refs.playlist.show()
         },
+        async _getSongInfo(id){
+            try{
+                await Promise.all([this._getLyric(id),this._getSong(id)])
+            }catch(e){
+                this.noLyric = true;
+                this.currentLyric = null;
+                this.playingLyric = '';
+                this.currentLineNum = 0
+            }
+        },
         _getSong (id) {
             getSong(id).then((res) => {
                 this.url = res.data.data[0].url
             })
+        },
+        _getLyric(id){
+            this.noLyric = false;
+            if (this.currentLyric) {
+                this.currentLyric.stop();
+                this.currentLyric = null;
+                this.playingLyric = '';
+                this.currentLineNum = 0
+            }
+            getLyric(id).then(res => {
+                this.currentLyric = new Lyric(res.data.lrc.lyric, this.handleLyric);
+                if (this.playing) {
+                    this.currentLyric.play()
+                }
+            })
+        },
+        handleLyric({lineNum, txt}){
+            this.currentLineNum = lineNum;
+            if (lineNum > 5) {
+                let lineEl = this.$refs.lyricLine[lineNum - 5]
+                this.$refs.lyricList.scrollToElement(lineEl, 1000)
+            } else {
+                this.$refs.lyricList.scrollTo(0, 0, 1000)
+            }
+            this.playingLyric = txt
         },
          _resetCurrentIndex (list) {
             let index = list.findIndex((item) => {
@@ -452,6 +504,20 @@ export default {
                                 border-radius: 50%;
                             }
                         }  
+                    }
+
+                    .playing-lyric-wrapper{
+                        width: 80%;
+                        margin: 30px auto 0 auto;
+                        overflow: hidden;
+                        text-align: center;
+
+                        .playing-lyric{
+                            height: 20px;
+                            line-height: 20px;
+                            font-size: $font-size-medium;
+                            color: $color-text-l;
+                        }
                     }
                 }
 
