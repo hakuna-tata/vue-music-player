@@ -1,7 +1,7 @@
 <template>
     <div class="player" v-show="playlist.length > 0">
         <transition name="normal">
-            <div class="normal-player" v-show="fullScreen" @touchstart.once="firstPlay">
+            <div class="normal-player" v-show="fullScreen">
                 <div class="background">
                     <div class="filter"></div>
                     <img :src="currentSong.image" width="100%" height="100%">
@@ -38,13 +38,13 @@
                     </transition> -->
                 </div>
                 <div class="bottom">
-                    <!-- <div class="progress-wrapper">
+                    <div class="progress-wrapper">
                         <span class="time time-l">{{format(currentTime)}}</span>
                         <div class="progress-bar-wrapper">
-                            <progress-bar :percent="percent" @percentChangeEnd="percentChangeEnd" @percentChange="percentChange"></progress-bar>
+                            <progress-bar :percent="percent" @percentChange="onProgressBarChange"></progress-bar>
                         </div>
                         <span class="time time-r">{{format(duration)}}</span>
-                    </div> -->
+                    </div>
                     <div class="operators">
                         <div class="icon i-left" >
                             <i class="iconfont mode" :class="iconMode" @click="changeMode"></i>
@@ -76,15 +76,16 @@
                 </div>
                 <div class="control" @click.stop="togglePlaying">
                     <progress-circle :radius="radius" :percent="percent">
-                        <i class="fa" :class="miniIcon"></i>
+                        <i class="mini-icon" :class="miniIcon"></i>
                     </progress-circle>
                 </div>
                 <div class="control" @click.stop="showPlaylist">
-                    <i class="iconfont icon-musicList"></i>
+                    <i class="iconfont icon-shunxu"></i>
                 </div>
             </div>
         </transition>
-        <audio ref="audio" autoplay @canplay="ready"></audio>
+        <playlist ref="playlist"></playlist>
+        <audio ref="audio" @canplay="ready" @error="error" @timeupdate="updateTime" @ended="end"></audio>
     </div>
 </template>
 
@@ -92,28 +93,29 @@
 import ProgressCircle from '@/base/progress-circle/progress-circle';
 import ProgressBar from '@/base/progress-bar/progress-bar';
 import Scroll from '@/base/scroll/scroll';
+import Playlist from '@/components/play-list/play-list';
 import {playMode} from '@/utils/config';
 import {shuffle} from '@/utils/utl';
 import {mapGetters, mapMutations, mapActions} from 'vuex';
 import {getSong, getLyric} from '@/api/song'
 
 export default {
-    components:{ProgressCircle,ProgressBar,Scroll},
+    components:{ProgressCircle,ProgressBar,Scroll,Playlist},
     computed:{
+        cdCls () {
+            return this.playing ? 'play' : 'play pause'
+        },
         iconMode () {
             if (this.mode === playMode.sequence) {
-                return 'icon-liebiaoxunhuan'
+                return 'icon-sequeue'
             } else if (this.mode === playMode.loop) {
-                return 'icon-danquxunhuan'
+                return 'icon-xunhuan'
             } else {
                 return 'icon-suiji'
             }
         },
-        cdCls () {
-            return this.playing ? 'play' : 'play pause'
-        },
         miniIcon () {
-            return this.playing ? 'fa-stop' : 'fa-play'
+            return this.playing ? 'icon-pause' : 'icon-play'
         },
         playIcon () {
             return this.playing ?  'icon-bofang' : 'icon-zanting'
@@ -144,19 +146,28 @@ export default {
             if (newVal.id === oldVal.id) {
                 return
             }
-            this.$refs.audio.pause()
-            this.$refs.audio.currentTime = 0
+            this.$refs.audio.pause();
+            this.$refs.audio.currentTime = 0;
             this._getSong(newVal.id)
         },
         url(newUrl){
-            this.$refs.audio.src = newUrl
+            this.$refs.audio.src = newUrl;
+            let timeStamp = setInterval(() => {
+                this.duration = this.$refs.audio.duration;
+                this.$refs.audio.play()
+                if (this.duration) {
+                    clearInterval(timeStamp)
+                }
+            }, 20)
         },
         playing(newPlaying) {
-            const audio = this.$refs.audio
             this.$nextTick(() => {
-                newPlaying ? audio.play() : audio.pause()
+                newPlaying ? this.$refs.audio.play() : this.$refs.audio.pause()
             })
         },
+        currentTime () {
+            this.percent = this.currentTime / this.duration
+        }
     },
     data(){
         return{
@@ -186,9 +197,6 @@ export default {
             'deleteFavoriteList',
             'savePlayHistory'
         ]),
-        firstPlay(){
-
-        },
         back(){
             this.setFullScreen(false);
             this.currentShow = 'cd'
@@ -197,22 +205,41 @@ export default {
             this.setFullScreen(true)
         },
         togglePlaying(){
+            if (!this.songReady) {
+                return
+            }
             this.setPlayingState(!this.playing);
         },
+        changeMode(){
+            const mode = (this.mode + 1) % 3;
+            this.setPlayMode(mode);
+            let list = null;
+            if (mode === playMode.random) {
+                list = shuffle(this.sequenceList)
+            }else {
+                list = this.sequenceList
+            }
+            this._resetCurrentIndex(list);
+            this.setPlaylist(list);
+        },  
         prev(){
             if (!this.songReady) {
                 return
             }
+            if (this.playlist.length === 1) {
+                this.loop()
+                return
+            } else{
+                let index = this.currentIndex - 1;
+                if (index === -1) {
+                    index = this.playlist.length - 1
+                }
+                this.setCurrentIndex(index)
+                if (!this.playing) {
+                    this.togglePlaying()
+                }
+            }
             this.songReady = false;
-            let index = this.currentIndex - 1;
-            if (index === -1) {
-                index = this.playlist.length - 1
-            }
-            this.setCurrentIndex(index)
-            if (!this.playing) {
-                this.togglePlaying()
-            }
-            this.songReady = true;
         },
         next(){
             if (!this.songReady) {
@@ -233,17 +260,26 @@ export default {
             }
             this.songReady = false
         },
+        loop(){
+            this.$refs.audio.currentTime = 0
+            this.$refs.audio.play()
+            this.setPlayingState(true)
+        },
         ready () {
             this.songReady = true
         },
-        changeMiddle(){
-
+        error(){
+            this.songReady = true
         },
-        percentChangeEnd(){
-
+        updateTime (e) {
+            this.currentTime = e.target.currentTime
         },
-        percentChange(){
-
+        end(){
+            if (this.mode === playMode.loop) {
+                this.loop()
+            } else {
+                this.next()
+            }
         },
         format (interval) {
             interval = interval | 0
@@ -254,20 +290,34 @@ export default {
             }
             return minute + ':' + second
         },
-        changeMode(){
+        onProgressBarChange(percent){
+           this.$refs.audio.currentTime = this.duration * percent;
+            if (!this.playing) {
+                this.togglePlaying()
+            }
+        },
+        changeMiddle(){
 
         },
-        
         toggleFavorite(){
 
         },
         getFavoriteIcon(){
 
         },
+        showPlaylist(){
+            this.$refs.playlist.show()
+        },
         _getSong (id) {
             getSong(id).then((res) => {
                 this.url = res.data.data[0].url
             })
+        },
+         _resetCurrentIndex (list) {
+            let index = list.findIndex((item) => {
+                return item.id === this.currentSong.id
+            })
+            this.setCurrentIndex(index)
         },
     },
     created () {
@@ -549,6 +599,28 @@ export default {
                     color: $color-text;
                 }
             }
+
+            .control {
+                flex: 0 0 30px;
+                width: 30px;
+                padding: 0 10px;
+                
+                .iconfont {
+                    position: relative;
+                    font-size: 25px;
+                    left: 0;
+                    top: -2px;
+                }
+
+                .mini-icon{
+                    color: $color-theme-d;
+                    font-size: 30px;
+                    position: absolute;
+                    left:1px;
+                    top: 1px;
+                }
+                
+            }           
         }
     }
     .play {
