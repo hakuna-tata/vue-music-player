@@ -2,15 +2,15 @@
     <div class="music-list">
         <div class="back" ref="back">
             <i class="iconfont icon-fanhui" @click="back"></i>
-            <h1 class="title">{{title}}</h1>
+            <h1 class="title" v-show="scrollY < minTranslateY">{{title}}</h1>
         </div>
         <div class="bg-image" :style="bgStyle" ref="bgImage">
             <div class="filter"></div>
             <h1 class="list-title">{{title}}</h1>
             <p class="play-count" v-if="playCount">
-              <i class="icon-erji"></i>
-              {{playCount}}
+              <i class="icon-erji"></i>{{playCount}}
             </p>
+            <p class="play-count" v-if="updateTime">{{updateTime}}</p>
         </div>
         <scroll class="list"
             @scroll="scroll"
@@ -24,7 +24,7 @@
                     <span class="text">播放全部</span>
                     <span class="count">(共{{songs.length}}首)</span>
                 </div>
-                <song-list @select="selectItem" :songs="songs"></song-list>
+                <song-list @select="selectItem" :rank="rank" :songs="songs"></song-list>
             </div>
             <div class="loading-content" v-show="!songs.length">
                 <loading></loading>
@@ -64,6 +64,10 @@ export default {
             type:[String,Number],
             default:''
         },
+        updateTime: {
+            type: String,
+            default: ''
+        },
         rank: {
             type: Boolean,
             default: false
@@ -72,6 +76,7 @@ export default {
     data(){
         return{
             scrollY:0,
+            minTranslateY:0,
         }
     },
     computed:{
@@ -132,12 +137,10 @@ export default {
             }
 
             if (newY < this.minTranslateY) {
-                this.headerTitle = this.headerTitleTouchDown;
                 this.$refs.bgImage.style.paddingTop = 0;
                 this.$refs.bgImage.style.height = `${RESERVED_HEIGHT}px`;
                 
             }else {
-                this.headerTitle = "";
                 this.$refs.bgImage.style.paddingTop = '70%';
                 this.$refs.bgImage.style.height = 0;
                 
@@ -179,14 +182,16 @@ export default {
                 font-size: 25px;
             }
             .title{
-                overflow: hidden;
-                white-space: nowrap;
-                text-overflow: ellipsis;
-                position: absolute;
+                 position: absolute;
+                width: 50%;
+                text-align: center;
                 left:50%;
                 top:0;
                 transform: translateX(-50%);
                 font-size: $font-size-large-s;
+                overflow: hidden;
+                white-space: nowrap;
+                text-overflow: ellipsis;
             }
         }
 

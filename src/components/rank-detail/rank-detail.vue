@@ -1,6 +1,6 @@
 <template>
     <transition name="slide">
-        <music-list :rank="rank" :title="title" :bg-image="bgImage" :songs="songs"></music-list>
+        <music-list :rank="rank" :updateTime="updateTime" :title="title" :bg-image="bgImage" :songs="songs"></music-list>
     </transition>
 </template>
 
@@ -18,6 +18,12 @@ export default {
         },
         bgImage() {
             return this.topList.coverImgUrl
+        },
+        updateTime () {
+            let time = new Date(this.topList.updateTime)
+            let month = time.getMonth() + 1
+            let day = time.getDate()
+            return `最近更新:${month}月${day}日`
         },
         ...mapGetters([
             'topList'
