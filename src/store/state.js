@@ -1,7 +1,8 @@
 import {playMode} from '@/utils/config'
 
 const state = {
-    musicList: {},
+    recommendList: {},
+    topList: {},
     singer: {},
     // 播放
     playing: false,

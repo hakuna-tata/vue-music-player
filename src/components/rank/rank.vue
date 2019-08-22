@@ -26,10 +26,13 @@
 import {getTop} from '@/api/rank';
 import Scroll from '@/base/scroll/scroll';
 import Loading from '@/base/loading/loading';
+import {playlistMixin} from '@/utils/mixin';
+import {mapMutations} from 'vuex';
 
-const YUNMUSIC_TOP = [0, 1, 2, 3, 4, 22, 23]
+const YUNMUSIC_TOP = 23
 
 export default {
+    mixins: [playlistMixin],
     components:{Scroll,Loading},
     data () {
         return {
@@ -41,17 +44,28 @@ export default {
         this._getTopList()
     },
     methods: {
+        ...mapMutations({
+            setTopList: 'SET_TOP_LIST'
+        }),
+        handlePlaylist (playlist) {
+            const bottom = playlist.length > 0 ? '60px' : ''
+            this.$refs.rank.style.bottom = bottom
+            this.$refs.scroll.refresh()
+        },
         selectItem (item){
-
+            this.$router.push({
+                path: `/rank/${item.id}`
+            })
+            this.setTopList(item)
         },
         _getTopList () {
-            for (let i = 0; i < YUNMUSIC_TOP.length; i++) {
-                getTop(YUNMUSIC_TOP[i]).then((res) => {
+            for (let i = 0; i < YUNMUSIC_TOP; i++) {
+                getTop(i).then((res) => {
                     let list = res.data.playlist;
                     list.top = res.data.playlist.tracks.slice(0, 3);
                     this.yunTopList.push(list);
                 })
-                if (i === YUNMUSIC_TOP.length - 1) {
+                if (i === YUNMUSIC_TOP - 1) {
                     this.showLoading = false
                 }
             }

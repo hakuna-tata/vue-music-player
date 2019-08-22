@@ -12,7 +12,13 @@ export default new Router({
     {
         path: '/recommend',
         name: 'recommend',
-        component: () => import('@/components/recommend/recommend.vue')
+        component: () => import('@/components/recommend/recommend.vue'),
+        children:[
+          {
+            path:':id',
+            component: () => import('@/components/disc/disc.vue'),
+          }
+        ]
     },
     {
       path: '/singer',
@@ -28,7 +34,13 @@ export default new Router({
     {
       path: '/rank',
       name: 'rank',
-      component: () => import('@/components/rank/rank.vue')
+      component: () => import('@/components/rank/rank.vue'),
+      children:[
+        {
+          path:':id',
+          component: () => import('@/components/rank-detail/rank-detail.vue')
+        }
+      ]
     },
     {
       path: '/search',

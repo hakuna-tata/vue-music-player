@@ -1,4 +1,6 @@
-export const SET_MUSIC_LIST = 'SET_MUSIC_LIST'
+export const SET_RECOMMEND_LIST = 'SET_RECOMMEND_LIST'
+
+export const SET_TOP_LIST = 'SET_TOP_LIST'
 
 export const SET_SINGER = 'SET_SINGER'
 

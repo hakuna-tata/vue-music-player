@@ -39,7 +39,7 @@
 import Scroll from '@/base/scroll/scroll';
 import {getData} from '@/utils/dom';
 
-const ANCHOR_HEIGHT = 22;
+const ANCHOR_HEIGHT = 19;
 const TITLE_HEIGHT = 20;
 
 export default {
@@ -78,6 +78,9 @@ export default {
     methods:{
         selectItem(item){
             this.$emit('select', item)
+        },
+        refresh () {
+            this.$refs.listview.refresh()
         },
         scroll(pos){
             this.scrollY = pos.y;
@@ -197,7 +200,7 @@ export default {
             width: 20px;
             text-align: center;
             .item {
-                padding: 5px 5px;
+                padding: 2px 5px 5px;
                 line-height: 1;
                 color: $color-text-g;
                 font-size: $font-size-small;

@@ -8,6 +8,7 @@
 <script>
 import ListView from '@/base/listview/listview';
 import {getSingers} from '@/api/singer';
+import {playlistMixin} from '@/utils/mixin'
 import {mapMutations} from 'vuex';
 
 const pinyin = require('pinyin');
@@ -15,6 +16,7 @@ const HOT_NAME = '热门';
 const HOT_SINGERS = 10
 
 export default {
+    mixins: [playlistMixin],
     components:{ListView},
     data () {
         return {
@@ -25,6 +27,11 @@ export default {
         ...mapMutations({
             setSinger: 'SET_SINGER'
         }),
+        handlePlaylist (playlist) {
+            const bottom = playlist.length > 0 ? '60px' : ''
+            this.$refs.singer.style.bottom = bottom
+            this.$refs.list.refresh()
+        },
         selectSinger(singer){
             this.$router.push({path:`/singer/${singer.id}`});
             this.setSinger(singer)

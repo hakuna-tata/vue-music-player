@@ -55,8 +55,12 @@ import Slider from '@/base/slider/slider';
  import Loading from '@/base/loading/loading';
 import {getBanner, getRecommendList, getRecommendMusic} from '@/api/recommend';
 import {createRecommendSong} from '@/utils/song';
-import {ERR_OK} from '@/utils/config'
+import {ERR_OK} from '@/utils/config';
+import {playlistMixin} from '@/utils/mixin';
+import {mapMutations} from 'vuex';
+
 export default {
+    mixins: [playlistMixin],
     components:{Scroll,Slider,Loading},
     data(){
         return{
@@ -66,11 +70,23 @@ export default {
         }
     },
     methods:{
+        ...mapMutations({
+            setRecommendList: 'SET_RECOMMEND_LIST'
+        }),
+        handlePlaylist (playlist) {
+            const bottom = playlist.length > 0 ? '60px' : ''
+            this.$refs.recommend.style.bottom = bottom
+            this.$refs.scroll.refresh()
+        },
         selectBanner(item){
 
         },
         selectSong(item){
 
+        },
+        selectList(item){
+            this.$router.push({path: `/recommend/${item.id}`})
+            this.setRecommendList(item)
         },
         _getBanner () {
             getBanner().then((res) => {

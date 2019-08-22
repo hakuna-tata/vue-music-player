@@ -1,6 +1,8 @@
 import {getSong} from '@/api/song'
 
-export const musicList = state => state.musicList
+export const recommendList = state => state.recommendList
+
+export const topList = state => state.topList
 
 export const singer = state => state.singer
 
