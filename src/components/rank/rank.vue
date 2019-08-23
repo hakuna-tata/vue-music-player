@@ -91,7 +91,7 @@ export default {
                 height: 100px;
                 border-bottom: 1px solid rgb(228, 228, 228);
                 &:last-child {
-                    padding-bottom: 20px;
+                    padding-bottom: 0;
                 }
                 .icon {
                     flex: 0 0 100px;
@@ -120,11 +120,11 @@ export default {
                 }
             }
 
-            .loading-content {
+            .loading-container{
                 position: absolute;
                 width: 100%;
                 top: 50%;
-                transform: translateY(-50%);
+                transform: translateY(-50%)
             }
         }
     }

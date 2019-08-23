@@ -16,7 +16,7 @@ export default new Router({
         children:[
           {
             path:':id',
-            component: () => import('@/components/disc/disc.vue'),
+            component: () => import('@/components/recommend-detail/recommend-detail.vue'),
           }
         ]
     },
@@ -45,7 +45,13 @@ export default new Router({
     {
       path: '/search',
       name: 'search',
-      component: () => import('@/components/search/search.vue')
+      component: () => import('@/components/search/search.vue'),
+      children:[
+        {
+          path: ':id',
+          component: () => import('@/components/singer-detail/singer-detail.vue')
+        }
+      ]
     },
     {
       path: '/user',

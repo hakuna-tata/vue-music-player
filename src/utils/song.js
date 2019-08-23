@@ -52,3 +52,12 @@ export default class Song {
     })
   }
   
+  export function createSearchSong (music) {
+    return new Song({
+      id: music.id,
+      singer: singerName(music.artists),
+      name: music.name,
+      // aliaName: filiterAliaName(music.alias),
+      album: music.album.name
+    })
+  }
