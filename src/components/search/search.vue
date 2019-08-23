@@ -5,27 +5,30 @@
                 <i class="icon icon-fanhui" @click="back"></i>
                 <search-box @query="onQueryChange" ref="searchBox"></search-box>
             </div>
-            <scroll class="search-scroll-wrapper" ref="scroll" :pullup="pullup" @scrollToEnd="searchMore">
-                <div ref="search">
-                    <div class="search-hots">
-                        <p class="title">热门搜索</p>
-                        <span class="search-hots-item" v-for="item in hots" :key="item.id" @click="addQuery(item.first)">
-                        {{item.first}}
-                        </span>
-                    </div>
-                    <!-- <div class="shortcut-wrapper">
-                        <div class="search-history" v-show="searchHistory.length">
-                            <h1 class="title">
-                                <span class="text">搜索历史</span>
-                                <span class="clear" @click="showConfirm">
-                                <i class="icon-del" ></i>
-                                </span>
-                            </h1>
-                            <search-list @select="addQuery" @delete="deleteSearchHistory" :searches="searchHistory"></search-list>
+            <div ref="shortcutWrapper" class="shortcut-wrapper" v-show="!query">
+                <scroll class="shortcut" ref="scroll" >
+                    <div>
+                        <div class="search-hots">
+                            <p class="title">热门搜索</p>
+                            <span class="search-hots-item" v-for="item in hots" :key="item.id" @click="addQuery(item.first)">
+                            {{item.first}}
+                            </span>
                         </div>
-                    </div> -->
-                </div>
-            </scroll>
+                        <!-- <div class="shortcut-wrapper">
+                            <div class="search-history" v-show="searchHistory.length">
+                                <h1 class="title">
+                                    <span class="text">搜索历史</span>
+                                    <span class="clear" @click="showConfirm">
+                                    <i class="icon-del" ></i>
+                                    </span>
+                                </h1>
+                                <search-list @select="addQuery" @delete="deleteSearchHistory" :searches="searchHistory"></search-list>
+                            </div>
+                        </div> -->
+                    </div> 
+                </scroll>
+            </div>
+            
             <div class="search-result" v-show="query" ref="searchResult">
                 <suggest @select="saveSearch" @refresh="refresh" :query="query" ref="suggest"></suggest>
             </div>
@@ -119,14 +122,19 @@ export default {
             }
         }
 
-        .search-scroll-wrapper{
+        .shortcut-wrapper{
+            position: fixed;
+            top: 50px;
+            bottom: 0;
+            width: 100%;
+        }
+        .shortcut{
             height: 100%;
             overflow: hidden;
-
             .search-hots {
                 margin: 0 10px;
                 .title {
-                    padding: 15px 5px 0 5px;
+                    padding: 0 5px;
                     height: 30px;
                     line-height: 30px;
                     font-size:$font-size-small-x;
@@ -143,33 +151,12 @@ export default {
                     font-size: $font-size-medium;
                 }
             }
-
-            .shortcut-wrapper{
-                position: relative;
-                margin: 0 auto;
-
-                .search-history {
-                    position: relative;
-                    margin: 10px 25px;
-
-                    .title {
-                        display: flex;
-                        align-items: center;
-                        height: 30px;
-                        font-size: $font-size-small-x;
-                        color: $color-text-g;
-                        .text {
-                            flex: 1;
-                        }
-                    }
-                }
-            }
         }
 
         .search-result {
-            position: relative;
+            position: fixed;
             width: 100%;
-            top: 10px;
+            top: 60px;
             bottom: 0;
         }
     }

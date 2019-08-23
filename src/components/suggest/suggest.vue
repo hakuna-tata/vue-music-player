@@ -1,19 +1,33 @@
 <template>
-    <scroll class="suggest" ref="suggest">
+    <scroll class="suggest" 
+            ref="suggest"
+            :pullup="pullup"
+            :data="songs">
         <div class="search-suggest">
             <p class="title">最佳匹配</p>
-            <div v-if="suggest.artists">
-                <div v-for="item in suggest.artists" @click="selectItem(item)" class="search-suggest-item" >
-                    <img :src="item.img1v1Url" width="50" height="50">
-                    <span>歌手：{{item.name}}</span>
+            <div v-if="artists">
+                <div v-for="item in artists" @click="selectItem(item)" class="search-suggest-item" >
+                    <img :src="item.img1v1Url" style="border-radius:50%">
+                    <p>歌手:{{item.name}}</p>
                 </div>
             </div>
-            <div v-if="suggest.playlists">
-                <div v-for="item in suggest.playlists" @click="selectList(item)" class="search-suggest-item" >
-                    <img :src="item.coverImgUrl" width="50" height="50">
-                    <div class="text">
+            <div v-if="playlists">
+                <div v-for="item in playlists" @click="selectList(item)" class="search-suggest-item" >
+                    <img :src="item.coverImgUrl">
+                    <div>
                         <p>歌单:{{item.name}}</p>
-                        <p class="singer">{{suggest.albums[0].artist.name}}</p>
+                        <div class="playlists">
+                            <span>{{item.trackCount}}首</span>
+                            <span>播放{{item.playCount}}次</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div v-if="songs">
+                <div v-for="item in songs" @click="selectMusic(item)" class="search-suggest-item" >
+                    <div class="name">
+                        <p class="song">{{item.name}}</p>
+                        <p class="singer">{{item.artists[0].name}}</p>
                     </div>
                 </div>
             </div>
@@ -38,11 +52,10 @@ export default {
     },
     data () {
         return {
-            suggest: {},
-            singer: {},
+            artists: [],
+            playlists:[],
             songs: [],
-            page: 0,
-            update: true,
+            pullup:true,
             haveMore: true
         }
     },
@@ -53,12 +66,18 @@ export default {
         selectList(){
 
         },
-        search(){
+        selectMusic(){
+
+        },
+        search(newVal){
             this.haveMore = true
             this.$refs.suggest.scrollTo(0, 0)
-            getSearchSuggest(this.query).then((res) => {
-                this.suggest = res.data.result
-                console.log(this.suggest)
+            getSearchSuggest(newVal).then((res) => {
+                let {artists,playlists,songs} = res.data.result
+                this.artists = artists;
+                this.playlists = playlists;
+                this.songs = songs;
+                this.$emit('refresh')
             })
             
         },
@@ -69,20 +88,6 @@ export default {
             if (!this.songs.length) {
                 return
             }
-            getSearchSongs(this.query, this.page).then((res) => {
-                let list = res.data.result.songs
-                if (!res.data.result.songs) {
-                    this.haveMore = false
-                    return
-                }
-                let ret = []
-                list.forEach((item) => {
-                    ret.push(createSearchSong(item))
-                })
-                this.songs = this.songs.concat(ret)
-                this.$emit('refresh')
-                this.page += 30
-            })
         },
     },
     watch:{
@@ -90,7 +95,7 @@ export default {
             if(newVal === ''){
                 return
             }
-            this.search()
+            this.search(newVal)
         }
     }
 }
@@ -99,7 +104,7 @@ export default {
 <style lang="scss" scoped>
     .suggest {
         overflow: hidden;
-
+        height: 100%;
         .search-suggest {
             margin:0 10px;
             .title {
@@ -110,24 +115,40 @@ export default {
             .search-suggest-item {
                 display: flex;
                 align-items: center;
+                height: 60px;
                 padding: 8px 5px;
                 border-bottom: 1px solid rgb(228, 228, 228);
                 font-size: $font-size-medium;
                 img {
                     flex: 0 0 50px;
-                    padding-right: 15px;
+                    width:50px;
+                    height:50px;
+                    margin-right: 15px;
                 }
-                .text {
-                    width: 100%;
-                    p {
-                        padding: 3px 0;
-                        white-space: nowrap;
-                        overflow: hidden;
-                        text-overflow: ellipsis;
+                p {
+                    @include no-wrap();
+                }
+                .playlists {
+                    margin-top:10px;
+                    font-size: 12px;
+                    color: $color-text;
+
+                    span + span{
+                        margin-right: 10px;
+                    }
+                }
+                .name {
+                    flex: 1;
+                    font-size: $font-size-medium;
+                    color: $color-text;
+                    .song {
+                        font-size: $font-size-medium-x;
+                        color: $color-text;
                     }
                     .singer {
+                        margin-top:10px;
                         font-size: 12px;
-                        color: $color-text;
+                        color: $color-text-g;
                     }
                 }
             }
