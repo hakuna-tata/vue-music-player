@@ -6,7 +6,7 @@
         <div class="search-suggest">
             <p class="title">最佳匹配</p>
             <div v-if="artists">
-                <div v-for="item in artists" @click="selectItem(item)" class="search-suggest-item" >
+                <div v-for="item in artists" @click="selectSinger(item)" class="search-suggest-item" >
                     <img :src="item.img1v1Url" style="border-radius:50%">
                     <p>歌手:{{item.name}}</p>
                 </div>
@@ -14,9 +14,9 @@
             <div v-if="playlists">
                 <div v-for="item in playlists" @click="selectList(item)" class="search-suggest-item" >
                     <img :src="item.coverImgUrl">
-                    <div>
+                    <div class="playlists">
                         <p>歌单:{{item.name}}</p>
-                        <div class="playlists">
+                        <div>
                             <span>{{item.trackCount}}首</span>
                             <span>播放{{item.playCount}}次</span>
                         </div>
@@ -60,11 +60,23 @@ export default {
         }
     },
     methods:{
-        selectItem(){
-
+        ...mapMutations({
+            setSinger: 'SET_SINGER',
+            setRecommendList: 'SET_RECOMMEND_LIST'
+        }),
+        selectSinger(item){
+            let aliaName = item.trans ? item.trans : item.alias[0] ? item.alias[0] : ""
+            this.$router.push({path:`/singer/${item.id}`})
+            this.setSinger({
+                aliaName: aliaName,
+                avatar:item.img1v1Url,
+                id:item.id,
+                name:item.name
+            })
         },
-        selectList(){
-
+        selectList(item){
+            this.$router.push({path: `/recommend/${item.id}`})
+            this.setRecommendList(item)
         },
         selectMusic(){
 
@@ -115,7 +127,7 @@ export default {
             .search-suggest-item {
                 display: flex;
                 align-items: center;
-                height: 60px;
+                height: 50px;
                 padding: 8px 5px;
                 border-bottom: 1px solid rgb(228, 228, 228);
                 font-size: $font-size-medium;
@@ -129,13 +141,16 @@ export default {
                     @include no-wrap();
                 }
                 .playlists {
-                    margin-top:10px;
-                    font-size: 12px;
-                    color: $color-text;
-
-                    span + span{
-                        margin-right: 10px;
+                    width: calc(100% - 65px);
+                    div{
+                        margin-top:10px;
+                        font-size: 12px;
+                        color: $color-text;
+                        span + span{
+                            margin-right: 10px;
+                        }
                     }
+                    
                 }
                 .name {
                     flex: 1;

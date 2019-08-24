@@ -1,7 +1,7 @@
 <template>
   <div class="search-box">
     <input :placeholder="placeholder" v-model="query" type="text" class="box">
-    <i v-show="query" class="icon icon-del" @click="clear"></i>
+    <i v-show="query" class="icon icon-quxiao" @click="clear"></i>
   </div>
 </template>
 
@@ -40,17 +40,12 @@ export default {
 <style scoped lang="scss">
 
 .search-box {
-  // position: relative;
   display: flex;
   align-items: center;
   box-sizing: border-box;
   width: 100%;
   height: 25px;
   border-bottom: 1px solid rgb(235, 235, 235);
-  .icon-search {
-    font-size: 24px;
-    color: $color-text-g;
-  }
   .box {
     flex: 1;
     line-height: 25px;
@@ -65,8 +60,8 @@ export default {
   }
   .icon {
     position: absolute;
-    right: 12px;
-    font-size: 25px;
+    right: 20px;
+    font-size: 16px;
     color: rgba(255, 255, 255, 0.8);
     border: none;
   }

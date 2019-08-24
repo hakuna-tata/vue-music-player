@@ -30,7 +30,7 @@
             </div>
             
             <div class="search-result" v-show="query" ref="searchResult">
-                <suggest @select="saveSearch" @refresh="refresh" :query="query" ref="suggest"></suggest>
+                <suggest @select="saveSearch" :query="query" ref="suggest"></suggest>
             </div>
             <!-- <confirm ref="confirm" @confirm="clearSearchHistory" text="是否清空所有搜索历史" confirmBtnText="清空"></confirm> -->
             <router-view></router-view>
@@ -45,8 +45,10 @@ import SearchList from '@/base/search-list/search-list';
 import Suggest from '@/components/suggest/suggest';
 import Confirm from '@/base/confirm/confirm'
 import {getSearchHot} from '@/api/search';
+import { playlistMixin } from '@/utils/mixin';
 
 export default {
+    mixins: [playlistMixin],
     components:{SearchBox,SearchList,Scroll,Suggest,Confirm},
     data(){
         return{
@@ -60,6 +62,14 @@ export default {
     },
 
     methods:{
+        handlePlaylist (playlist) {
+            const bottom = playlist.length > 0 ? '60px' : ''
+            this.$refs.searchResult.style.bottom = bottom
+            this.$refs.suggest.refresh()
+
+            this.$refs.shortcutWrapper.style.bottom = bottom
+            this.$refs.scroll.refresh()
+        },
         back(){
             this.$router.back()
             this.$refs.searchBox.clear()
@@ -75,11 +85,6 @@ export default {
         },
         saveSearch(){
 
-        },
-        refresh () {
-            setTimeout(() => {
-                this.$refs.scroll.refresh()
-            }, 20)
         },
         showConfirm(){
 
@@ -110,7 +115,7 @@ export default {
         background: $color-background;
 
         .search-box-wrapper {
-            padding: 10px 40px 10px 43px;
+            padding: 10px 20px 10px 40px;
             background: $color-theme;
             .icon {
                 position: absolute;

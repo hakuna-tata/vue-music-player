@@ -19,17 +19,6 @@ export default class Song {
     return name.join('/')
   }
   
-  export function createRecommendSong (music) {
-    return new Song({
-      id: music.id,
-      singer: singerName(music.song.artists),
-      name: music.name,
-      // aliaName: music.song.alias.join('-'),
-      album: music.song.album.name,
-      image: music.song.album.picUrl
-    })
-  }
-  
   export function createRecommendListSong (music) {
     return new Song({
       id: music.id,
@@ -38,6 +27,17 @@ export default class Song {
       // aliaName: music.song.alias.join('-'),
       album: music.al.name,
       image: music.al.picUrl
+    })
+  }
+
+  export function createRecommendSong (music) {
+    return new Song({
+      id: music.id,
+      singer: singerName(music.song.artists),
+      name: music.name,
+      // aliaName: music.song.alias.join('-'),
+      album: music.song.album.name,
+      image: music.song.album.picUrl
     })
   }
   

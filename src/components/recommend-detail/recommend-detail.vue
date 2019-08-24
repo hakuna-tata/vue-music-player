@@ -23,7 +23,7 @@ export default {
             return this.recommendList.name
         },
         bgImage() {
-            return this.recommendList.picUrl
+            return this.recommendList.picUrl || this.recommendList.coverImgUrl
         },
         playCount () {
         if (!this.recommendList.playCount) {

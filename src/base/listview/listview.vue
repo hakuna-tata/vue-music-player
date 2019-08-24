@@ -177,7 +177,6 @@ export default {
 
             &:last-child {
                 border: none;
-                padding-bottom:10px; 
             }
             .avatar {
                 width: 50px;
