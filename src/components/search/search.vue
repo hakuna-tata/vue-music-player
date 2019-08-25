@@ -2,7 +2,7 @@
     <transition name="search">
         <div class="search" ref="searchWrapper">
             <div class="search-box-wrapper">
-                <i class="icon icon-fanhui" @click="back"></i>
+                <i class="iconfont icon-fanhui" @click="back"></i>
                 <search-box @query="onQueryChange" ref="searchBox"></search-box>
             </div>
             <div ref="shortcutWrapper" class="shortcut-wrapper" v-show="!query">
@@ -64,11 +64,14 @@ export default {
     methods:{
         handlePlaylist (playlist) {
             const bottom = playlist.length > 0 ? '60px' : ''
-            this.$refs.searchResult.style.bottom = bottom
-            this.$refs.suggest.refresh()
-
+            
             this.$refs.shortcutWrapper.style.bottom = bottom
             this.$refs.scroll.refresh()
+            
+            
+            this.$refs.searchResult.style.bottom = bottom
+            this.$refs.suggest.refresh()
+            
         },
         back(){
             this.$router.back()
@@ -117,7 +120,7 @@ export default {
         .search-box-wrapper {
             padding: 10px 20px 10px 40px;
             background: $color-theme;
-            .icon {
+            .iconfont {
                 position: absolute;
                 left:0;
                 top:6px;

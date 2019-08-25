@@ -57,7 +57,7 @@ import {getBanner, getRecommendList, getRecommendMusic} from '@/api/recommend';
 import {createRecommendSong} from '@/utils/song';
 import {ERR_OK} from '@/utils/config';
 import {playlistMixin} from '@/utils/mixin';
-import {mapMutations} from 'vuex';
+import {mapMutations,mapActions} from 'vuex';
 
 export default {
     mixins: [playlistMixin],
@@ -73,6 +73,9 @@ export default {
         ...mapMutations({
             setRecommendList: 'SET_RECOMMEND_LIST'
         }),
+        ...mapActions([
+            'insertSong'
+        ]),
         handlePlaylist (playlist) {
             const bottom = playlist.length > 0 ? '60px' : ''
             this.$refs.recommend.style.bottom = bottom
@@ -82,7 +85,7 @@ export default {
 
         },
         selectSong(item){
-
+            this.insertSong(item)
         },
         selectList(item){
             this.$router.push({path: `/recommend/${item.id}`})

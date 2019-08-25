@@ -48,8 +48,12 @@ export default new Router({
       component: () => import('@/components/search/search.vue'),
       children:[
         {
-          path: ':id',
+          path: 'singer/:id',
           component: () => import('@/components/singer-detail/singer-detail.vue')
+        },
+        {
+          path:'list/:id',
+          component: () => import('@/components/recommend-detail/recommend-detail.vue')
         }
       ]
     },

@@ -24,7 +24,6 @@ export default class Song {
       id: music.id,
       singer: singerName(music.ar),
       name: music.name,
-      // aliaName: music.song.alias.join('-'),
       album: music.al.name,
       image: music.al.picUrl
     })
@@ -35,7 +34,6 @@ export default class Song {
       id: music.id,
       singer: singerName(music.song.artists),
       name: music.name,
-      // aliaName: music.song.alias.join('-'),
       album: music.song.album.name,
       image: music.song.album.picUrl
     })
@@ -46,7 +44,6 @@ export default class Song {
       id: music.id,
       singer: singerName(music.ar),
       name: music.name,
-      // aliaName: filiterAliaName(music.alia),
       album: music.al.name,
       image: music.al.picUrl
     })
@@ -57,7 +54,6 @@ export default class Song {
       id: music.id,
       singer: singerName(music.artists),
       name: music.name,
-      // aliaName: filiterAliaName(music.alias),
       album: music.album.name
     })
   }

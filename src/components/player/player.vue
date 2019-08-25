@@ -62,7 +62,7 @@
                             <i class="iconfont icon-ffw" @click="next"></i>
                         </div>
                         <div class="icon i-right">
-                            <i class="iconfont icon-like"  @click="toggleFavorite(currentSong)" :class="getFavoriteIcon(currentSong)"></i>
+                            <i class="iconfont" @click="toggleFavorite(currentSong)" :class="getFavoriteIcon(currentSong)"></i>
                         </div>
                     </div>
                 </div>
@@ -87,7 +87,7 @@
                 </div>
             </div>
         </transition>
-        <playlist ref="playlist"></playlist>
+        <playlist @stopMusic="stopMusic" ref="playlist"></playlist>
         <audio ref="audio" @canplay="ready" @error="error" @timeupdate="updateTime" @ended="end"></audio>
     </div>
 </template>
@@ -140,6 +140,7 @@ export default {
             'currentIndex',
             'mode',
             'sequenceList',
+            'favoriteList'
         ])
     },
     watch:{
@@ -199,7 +200,6 @@ export default {
         ...mapActions([
             'saveFavoriteList',
             'deleteFavoriteList',
-            'savePlayHistory'
         ]),
         back(){
             this.setFullScreen(false);
@@ -316,14 +316,30 @@ export default {
                 this.currentLyric.seek(this.duration * percent * 1000)
             }
         },
-        toggleFavorite(){
-
+        toggleFavorite(song){
+            if (this.isFavorite(song)) {
+                this.deleteFavoriteList(song)
+            } else {
+                this.saveFavoriteList(song)
+            }
         },
-        getFavoriteIcon(){
-
+        getFavoriteIcon(song){
+            if (this.isFavorite(song)) {
+                return 'icon-like'
+            }
+            return 'icon-dislike'
+        },
+        isFavorite (song) {
+            const index = this.favoriteList.findIndex((item) => {
+                return item.id === song.id
+            })
+            return index > -1
         },
         showPlaylist(){
             this.$refs.playlist.show()
+        },
+        stopMusic(){
+            this.$refs.audio.pause()
         },
         async _getSongInfo(id){
             try{

@@ -3,7 +3,7 @@
             ref="suggest"
             :pullup="pullup"
             :data="songs">
-        <div class="search-suggest">
+        <div class="search-suggest" v-show="artists.length || songs.length || playlists.length">
             <p class="title">最佳匹配</p>
             <div v-if="artists">
                 <div v-for="item in artists" @click="selectSinger(item)" class="search-suggest-item" >
@@ -31,6 +31,10 @@
                     </div>
                 </div>
             </div>
+            <!-- <loading v-show="haveMore"></loading> -->
+        </div>
+        <div v-show="!artists.length && !songs.length && !playlists.length" class="no-result-wrapper">
+            抱歉，暂无搜索结果
         </div>
     </scroll>
 </template>
@@ -43,7 +47,7 @@ import {createSearchSong} from '@/utils/song';
 import {mapMutations, mapActions} from 'vuex';
 
 export default {
-    components:{Scroll},
+    components:{Loading,Scroll},
     props:{
         query: {
             type: String,
@@ -64,9 +68,15 @@ export default {
             setSinger: 'SET_SINGER',
             setRecommendList: 'SET_RECOMMEND_LIST'
         }),
+        ...mapActions([
+            'insertSong'
+        ]),
+        refresh() {
+            this.$refs.suggest.refresh()
+        },
         selectSinger(item){
             let aliaName = item.trans ? item.trans : item.alias[0] ? item.alias[0] : ""
-            this.$router.push({path:`/singer/${item.id}`})
+            this.$router.push({path:`/search/singer/${item.id}`})
             this.setSinger({
                 aliaName: aliaName,
                 avatar:item.img1v1Url,
@@ -75,21 +85,23 @@ export default {
             })
         },
         selectList(item){
-            this.$router.push({path: `/recommend/${item.id}`})
+            this.$router.push({path: `/search/list/${item.id}`})
             this.setRecommendList(item)
         },
-        selectMusic(){
-
+        selectMusic(item){
+            getSongDetail(item.id).then((res) => {
+                item.image = res.data.songs[0].al.picUrl
+                this.insertSong(item)
+            })
         },
         search(newVal){
             this.haveMore = true
             this.$refs.suggest.scrollTo(0, 0)
             getSearchSuggest(newVal).then((res) => {
-                let {artists,playlists,songs} = res.data.result
+                let {artists=[],playlists=[],songs=[]} = res.data.result
                 this.artists = artists;
                 this.playlists = playlists;
                 this.songs = songs;
-                this.$emit('refresh')
             })
             
         },
@@ -167,6 +179,15 @@ export default {
                     }
                 }
             }
+        }
+
+        .no-result-wrapper {
+            position: fixed;
+            overflow: hidden;
+            left: 50%;
+            top: 40vh;
+            transform: translatex(-50%);
+            color: $color-text;
         }
     }
 </style>

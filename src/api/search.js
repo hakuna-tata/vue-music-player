@@ -19,10 +19,16 @@ export function getSearchSinger (name) {
     return axios.get(url)
   }
   
-  export function getSearchSongs (name, page) {
+export function getSearchSongs (name, page) {
     const url = HOST + `/search?keywords=${name}&offset=${page}`
   
     return axios.get(url)
-  }
+}
+
+export function getSongDetail (id) {
+  const url = HOST + `/song/detail?ids=${id}`
+
+  return axios.get(url)
+}
 
   

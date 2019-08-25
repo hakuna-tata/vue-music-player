@@ -34,6 +34,7 @@
     "extract-text-webpack-plugin": "^3.0.0",
     "file-loader": "^1.1.4",
     "friendly-errors-webpack-plugin": "^1.6.1",
+    "good-storage": "^1.1.0",
     "html-webpack-plugin": "^2.30.1",
     "jsonp": "^0.2.1",
     "lyric-parser": "^1.0.1",

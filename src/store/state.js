@@ -1,4 +1,5 @@
 import {playMode} from '@/utils/config'
+import {loadFavorite} from '@/utils/cache'
 
 const state = {
     recommendList: {},
@@ -15,6 +16,7 @@ const state = {
     mode: playMode.sequence,
     // 当前播放索引
     currentIndex: -1,
+    favoriteList:loadFavorite(),
 }
 
 export default state;

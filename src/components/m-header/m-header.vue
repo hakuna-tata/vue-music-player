@@ -2,7 +2,7 @@
     <div class="m-header">
         <h1 class="text">FXMUSIC</h1>
         <router-link to="/user" class="mine" tag="div">
-            <i class="icon icon-list"></i>
+            <i class="icon icon-person"></i>
         </router-link>
         <router-link to="/search" class="search" tag="div">
             <i class="icon icon-chaxun"></i>
