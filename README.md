@@ -1,10 +1,8 @@
 # fx-music
-
 模仿网易云音乐开发的一款webApp，适配常见移动端
 > api:一个开源的[网易云音乐 NodeJS 版 API](https://binaryify.github.io/NeteaseCloudMusicApi/#/)
 
 ## 如何安装与使用
-
 > fx-music
 
 ``` bash
@@ -29,7 +27,6 @@ node app.js // 服务端运行 访问 http://localhost:3000
 ```
 
 ## 技术栈
-
 * Vue-Cli（Vue 脚手架工具）
 * Vue（核心框架）
 * Vue-Router（页面路由）
@@ -64,10 +61,10 @@ node app.js // 服务端运行 访问 http://localhost:3000
 ## 播放器歌词界面
 ![播放器歌词详情](./screenshots/player02.png)
 
-## mini播放列表界面
+## mini播放器界面
 ![mini播放器详情](./screenshots/player03.png)
 
-## 播放列表界面
+## mini播放器列表界面
 ![播放列表详情](./screenshots/playlist.png)
 
 ## 搜索界面
@@ -75,3 +72,7 @@ node app.js // 服务端运行 访问 http://localhost:3000
 
 ## 搜索结果界面
 ![搜索结果](./screenshots/searchResult.png)
+
+## 其他说明
+- 个人练手项目(锻炼自己写复杂业务的能力)
+- 感谢 [ustbhuangyi](https://github.com/ustbhuangyi) 老师的 [Vue2.0开发企业级移动端音乐Web App课程](https://coding.imooc.com/class/107.html)
