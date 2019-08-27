@@ -18,6 +18,8 @@ export const mode = state => state.mode
 
 export const currentIndex = state => state.currentIndex
 
+export const playHistory = state => state.playHistory
+
 export const favoriteList = state => state.favoriteList
 
 export const currentSong = (state) => {

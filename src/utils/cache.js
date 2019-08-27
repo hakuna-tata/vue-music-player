@@ -30,6 +30,19 @@ function deleteFromArray (arr, compare) {
     }
 }
 
+export function savePlay (song) {
+  let songs = storage.get(PLAY_KEY, [])
+  insertArray(songs, song, (item) => {
+    return item.id === song.id
+  }, PLAY_MAX_LENGTH)
+  storage.set(PLAY_KEY, songs)
+  return songs
+}
+
+export function loadPlay () {
+  return storage.get(PLAY_KEY, [])
+}
+
 export function saveFavorite (song) {
     let songs = storage.get(FAVORITE_KEY, [])
     insertArray(songs, song, (item) => {

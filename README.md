@@ -64,7 +64,7 @@ node app.js // 服务端运行 访问 http://localhost:3000
 ## mini播放器界面
 ![mini播放器详情](./screenshots/player03.png)
 
-## mini播放器列表界面
+## mini播放器播放列表界面
 ![播放列表详情](./screenshots/playlist.png)
 
 ## 搜索界面
@@ -72,6 +72,12 @@ node app.js // 服务端运行 访问 http://localhost:3000
 
 ## 搜索结果界面
 ![搜索结果](./screenshots/searchResult.png)
+
+## 收藏界面
+![收藏](./screenshots/favorite.png)
+
+## 播放历史界面
+![播放历史](./screenshots/history.png)
 
 ## 其他说明
 - 个人练手项目(锻炼自己写复杂业务的能力)
