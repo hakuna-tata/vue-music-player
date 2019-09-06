@@ -88,7 +88,7 @@
             </div>
         </transition>
         <playlist @stopMusic="stopMusic" ref="playlist"></playlist>
-        <audio ref="audio" @canplay="ready" @error="error" @timeupdate="updateTime" @ended="end"></audio>
+        <audio ref="audio" @play="ready" @error="error" @timeupdate="updateTime" @ended="end"></audio>
     </div>
 </template>
 

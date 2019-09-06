@@ -6,8 +6,14 @@ import router from './router'
 import store from './store'
 import fastclick from 'fastclick'
 import VueLazyload from 'vue-lazyload'
+import VConsole from 'vconsole'
 
 import './assets/scss/index.scss'
+
+// /* eslint-disable no-unused-vars*/
+var vConsole = new VConsole();
+
+console.log("test")
 
 Vue.config.productionTip = false
 
