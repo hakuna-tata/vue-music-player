@@ -11,9 +11,9 @@ import VConsole from 'vconsole'
 import './assets/scss/index.scss'
 
 // /* eslint-disable no-unused-vars*/
-var vConsole = new VConsole();
+// var vConsole = new VConsole();
 
-console.log("test")
+// console.log("test")
 
 Vue.config.productionTip = false
 
