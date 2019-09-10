@@ -2,7 +2,7 @@
     <div class="recommend" ref="recommend">
         <scroll class="recommend-content" ref="scroll" :data="playList.concat(recommendMusic)">
             <div>
-                <div v-show="banner.length" class="decorate" v-if="banner.length"></div>
+                <div class="decorate"></div>
                 <div v-if="banner.length" class="slider-wrapper" ref="sliderWrapper">
                     <slider>
                         <div v-for="item in banner" :key="item.id" @click.stop="selectBanner(item)">
@@ -138,8 +138,7 @@ export default {
         width: 100%;
         top: 88px;
         bottom: 0;
-        z-index: 100;
-
+    
         .recommend-content {
             width: 100%;
             height: 100%;
@@ -147,14 +146,17 @@ export default {
 
             .decorate {
                 position: absolute;
-                top: 0;
-                width: 100%;
-                height: 88px;
-                z-index: -10;
+                top:-30vh;
+                height:40vh;
+                z-index:-10;
                 background: $color-theme;
+                width: 100%;
             }
+
             .slider-wrapper {
                 width: 96%;
+                // height: 0;
+                // padding-top:37%;
                 margin: 0 auto;
                 border-radius: 5px;
                 overflow: hidden;
@@ -195,7 +197,7 @@ export default {
                         }
                         img {
                             width: 100%;
-                            height: 100%;
+                            height:100%;
                             border-radius: 3px;
                         }
                     }

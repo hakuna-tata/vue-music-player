@@ -26,7 +26,6 @@ export default {
         width: 100%;
         font-size: $font-size-medium;
         background: $color-theme;
-
         .tab-item {
             flex: 1;
             text-align: center;
