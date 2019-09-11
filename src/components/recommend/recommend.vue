@@ -1,11 +1,16 @@
 <template>
     <div class="recommend" ref="recommend">
-        <scroll class="recommend-content" ref="scroll" :data="playList.concat(recommendMusic)">
+        <div class="decorate" ref="decorate"></div>
+        <scroll class="recommend-content" 
+                ref="scroll" 
+                :probeType="probeType"
+                :listenScroll="listenScroll"
+                @scroll="scroll"
+                :data="playList.concat(recommendMusic)">
             <div>
-                <div class="decorate"></div>
                 <div v-if="banner.length" class="slider-wrapper" ref="sliderWrapper">
                     <slider>
-                        <div v-for="item in banner" :key="item.id" @click.stop="selectBanner(item)">
+                        <div v-for="item in banner" :key="item.id" @click="selectBanner(item)">
                             <img :src="item.imageUrl">
                         </div>
                     </slider>
@@ -59,14 +64,26 @@ import {ERR_OK} from '@/utils/config';
 import {playlistMixin} from '@/utils/mixin';
 import {mapMutations,mapActions} from 'vuex';
 
+const offsetheight = 88 //decorate的高度
+
 export default {
     mixins: [playlistMixin],
     components:{Scroll,Slider,Loading},
     data(){
         return{
+            scrollY:-1,
             banner: [],
             playList: [],
             recommendMusic: []
+        }
+    },
+    watch:{
+        scrollY(newY){
+            if(newY < -offsetheight){
+                this.$refs.decorate.style.height = 0
+            }
+            this.$refs.decorate.style.height = (offsetheight + newY) + 'px'
+           
         }
     },
     methods:{
@@ -81,8 +98,11 @@ export default {
             this.$refs.recommend.style.bottom = bottom
             this.$refs.scroll.refresh()
         },
+        scroll(pos){
+             this.scrollY = pos.y;
+        },
         selectBanner(item){
-
+            console.log("fuck")
         },
         selectSong(item){
             this.insertSong(item)
@@ -123,6 +143,8 @@ export default {
         },
     },
     created(){
+        this.listenScroll = true
+        this.probeType = 3
         this._getBanner()
         this._getRecommendList()
         setTimeout(() => {
@@ -138,25 +160,22 @@ export default {
         width: 100%;
         top: 88px;
         bottom: 0;
-    
+
+        .decorate {
+            position: absolute;
+            height:88px;
+            width: 100%;
+            z-index:-10;
+            background: $color-theme;
+        }
+
         .recommend-content {
             width: 100%;
             height: 100%;
             overflow: hidden;
 
-            .decorate {
-                position: absolute;
-                top:-30vh;
-                height:40vh;
-                z-index:-10;
-                background: $color-theme;
-                width: 100%;
-            }
-
             .slider-wrapper {
                 width: 96%;
-                // height: 0;
-                // padding-top:37%;
                 margin: 0 auto;
                 border-radius: 5px;
                 overflow: hidden;
@@ -167,6 +186,7 @@ export default {
                 box-sizing: border-box;
                 width: 100%;
                 text-align: center;
+
                 .title {
                     height: 65px;
                     line-height: 65px;
