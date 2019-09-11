@@ -151,19 +151,24 @@ export default {
             if (newVal.id === oldVal.id) {
                 return
             }
-            this.$refs.audio.pause();
             this.$refs.audio.currentTime = 0;
-            this._getSongInfo(newVal.id)
+            this._getSong(newVal.id)
         },
         url(newUrl){
             this.$refs.audio.src = newUrl;
+
             let timeStamp = setInterval(() => {
                 this.duration = this.$refs.audio.duration;
-                this.$refs.audio.play()
                 if (this.duration) {
                     clearInterval(timeStamp)
                 }
             }, 20)
+
+            clearTimeout(this.timer)
+            this.timer = setTimeout(() => {
+                this.$refs.audio.play()
+                this._getLyric(this.currentSong.id)
+            }, 1000)
         },
         playing(newPlaying) {
             this.$nextTick(() => {
@@ -343,16 +348,6 @@ export default {
         stopMusic(){
             this.$refs.audio.pause()
         },
-        async _getSongInfo(id){
-            try{
-                await Promise.all([this._getLyric(id),this._getSong(id)])
-            }catch(e){
-                this.noLyric = true;
-                this.currentLyric = null;
-                this.playingLyric = '';
-                this.currentLineNum = 0
-            }
-        },
         _getSong (id) {
             getSong(id).then((res) => {
                 this.url = res.data.data[0].url
@@ -363,14 +358,16 @@ export default {
             if (this.currentLyric) {
                 this.currentLyric.stop();
                 this.currentLyric = null;
-                this.playingLyric = '';
-                this.currentLineNum = 0
             }
             getLyric(id).then(res => {
                 this.currentLyric = new Lyric(res.data.lrc.lyric, this.handleLyric);
                 if (this.playing) {
                     this.currentLyric.play()
                 }
+            }).catch(() => {
+                this.currentLyric = null
+                this.noLyric = true
+                this.currentLineNum = 0
             })
         },
         handleLyric({lineNum, txt}){
@@ -389,9 +386,6 @@ export default {
             })
             this.setCurrentIndex(index)
         },
-    },
-    created () {
-        this.move = false
     },
 }
 </script>
