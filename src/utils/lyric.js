@@ -3,26 +3,18 @@ var lyric = "[00:00.000] 作曲 : 许嵩\n[00:01.000] 作词 : 许嵩\n[00:24.38
 function parseLyric(lrc){
     const lines = lrc.split('\n')
     let lrcArr = []
-    const timeReg = /\[\d{2,}:[0-6]{1}[0-9]{1}\.[0-9]{2,3}\]/g
+    const timeReg = /\[(\d{2,}):([0-6]{1}[0-9]{1})\.([0-9]{2,3})\]/
     for(let i = 0; i < lines.length; i++){
         let line = lines[i]
-        let timeRegExpArr = line.match(timeReg)
-        if(!timeRegExpArr) continue
+        timeReg.test(line)
         let text = line.replace(timeReg,"")
-        for(let j=0,k=timeRegExpArr.length; j<k; j++){
-            let l = timeRegExpArr[j]
-            let min = Number(String(l.match(/\[\d{2,}/i)).slice(1))
-            let sec = Number(String(l.match(/:[0-6]{1}[0-9]{1}/i)).slice(1))
-            let time = min * 60 + sec
-            if(text !== ""){
-                lrcArr.push({
-                    time,
-                    text
-                })
-            }
-        }
+        if(text !== ""){
+            let time = (((Number(RegExp.$1) * 60 + Number(RegExp.$2)) * 1000 + Number(RegExp.$3)) / 1000).toFixed(3)
+            lrcArr.push({
+                text,
+                time
+            })
+        }   
     }
     return lrcArr
 }
-
-parseLyric(lyric)
