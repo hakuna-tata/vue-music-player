@@ -1,4 +1,3 @@
-
 export default class Song {
     constructor ({id, singer, name, album, image, aliaName}) {
       this.id = id

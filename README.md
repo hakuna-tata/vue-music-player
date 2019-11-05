@@ -1,14 +1,14 @@
-# fx-music
+# vue-music-player
 模仿网易云音乐开发的一款webApp，适配常见移动端
 > api:一个开源的[网易云音乐 NodeJS 版 API](https://binaryify.github.io/NeteaseCloudMusicApi/#/)
 
 ## 如何安装与使用
-> fx-music
+> vue-music-player
 
 ``` bash
-git clone https://github.com/FFFXUE/fx-music.git //下载 fx-music
+git clone https://github.com/FFFXUE/vue-music-player.git //下载 vue-music-player
 
-cd fx-music // 进入 fx-music 播放器目录
+cd vue-music-player // 进入 vue-music-player 播放器目录
 
 npm install // 安装依赖
 
