@@ -14,20 +14,14 @@
                     <h2 class="subtitle" v-html="currentSong.singer"></h2>
                 </div>
                 <div class="middle" @click="changeMiddle">
-                    <transition name="middleL">
-                        <div class="middle-l" v-show="currentShow === 'cd'">
-                            <div class="cd-wrapper">
-                                <div class="cd" :class="cdCls" >
-                                    <img :src="currentSong.image" class="image">
-                                </div>
-                            </div>
-                            <div class="playing-lyric-wrapper">
-                                <div class="playing-lyric">{{playingLyric}}</div>
-                            </div>
-                        </div>
-                    </transition>
-                    <transition name="middleR">
-                        <scroll class="middle-r" ref="lyricList" v-show="currentShow === 'lyric'" :data="currentLyric && currentLyric.lines">
+                    <player-cd 
+                        :currentShow="currentShow" 
+                        :playing="playing"
+                        :currentSongImage="currentSong.image" 
+                        :playingLyric="playingLyric">
+                    </player-cd>
+                    <player-lyric :currentShow="currentShow"></player-lyric>
+                        <div>
                             <div class="lyric-wrapper">
                                 <div class="currentLyric" v-if="currentLyric">
                                     <p ref="lyricLine" class="text" :class="{'current': currentLineNum === index}"
@@ -37,8 +31,7 @@
                                 </div>
                                 <p class="no-lyric" v-if="currentLyric === null">{{upDatecurrentLyric}}</p>
                             </div>
-                        </scroll>
-                    </transition>
+                        </div>
                 </div>
                 <div class="bottom">
                     <div class="progress-wrapper">
@@ -71,7 +64,7 @@
         <transition name="mini">
            <div class="mini-player" v-show="!fullScreen" @click.stop="open">
                 <div class="icon">
-                    <img :class="cdCls"  :src="currentSong.image" width="40" height="40">
+                    <img :class="this.playing ? 'play' : 'play pause'"  :src="currentSong.image" width="40" height="40">
                 </div>
                 <div class="text">
                     <h2 class="name" v-html="currentSong.name"></h2>
@@ -95,20 +88,17 @@
 <script>
 import ProgressCircle from '@/base/progress-circle/progress-circle';
 import ProgressBar from '@/base/progress-bar/progress-bar';
-import Scroll from '@/base/scroll/scroll';
+import playerCd from './player-cd';
+import playerLyric from './player-lyric';
 import Playlist from '@/components/play-list/play-list';
-import Lyric from 'lyric-parser';
 import {playMode} from '@/utils/config';
 import {shuffle} from '@/utils/utl';
 import {mapGetters, mapMutations, mapActions} from 'vuex';
 import {getSong, getLyric} from '@/api/song'
 
 export default {
-    components:{ProgressCircle,ProgressBar,Scroll,Playlist},
+    components:{ProgressCircle,ProgressBar,playerCd,playerLyric,Playlist},
     computed:{
-        cdCls () {
-            return this.playing ? 'play' : 'play pause'
-        },
         iconMode () {
             if (this.mode === playMode.sequence) {
                 return 'icon-sequeue'
@@ -480,95 +470,6 @@ export default {
                 bottom: 170px;
                 white-space: nowrap;
                 font-size: 0;
-
-                .middle-l {
-                    display: inline-block;
-                    vertical-align: top;
-                    position: relative;
-                    width: 100%;
-                    height: 0;
-                    padding-top: 80%;
-
-                    &.middleL-enter-active, &.middleL-leave-active {
-                        transition: all 0.3s
-                    }
-                    &.middleL-enter, &.middleL-leave-to {
-                        opacity: 0
-                    }
-                    .cd-wrapper {
-                        position: absolute;
-                        left: 10%;
-                        top: 0;
-                        width: 80%;
-                        height: 100%;
-                        .cd {
-                            width: 100%;
-                            height: 100%;
-                            box-sizing: border-box;
-                            border: 15px solid rgba(255, 255, 255, 0.1);
-                            border-radius: 50%;
-                            .image {
-                                position: absolute;
-                                left: 0;
-                                top: 0;
-                                width: 100%;
-                                height: 100%;
-                                border-radius: 50%;
-                            }
-                        }  
-                    }
-
-                    .playing-lyric-wrapper{
-                        width: 80%;
-                        margin: 30px auto 0 auto;
-                        overflow: hidden;
-                        text-align: center;
-
-                        .playing-lyric{
-                            height: 20px;
-                            line-height: 20px;
-                            font-size: $font-size-medium;
-                            color: $color-text-l;
-                        }
-                    }
-                }
-
-                .middle-r {
-                    display: inline-block;
-                    position: absolute;
-                    top: 0;
-                    vertical-align: top;
-                    width: 100%;
-                    height: 100%;
-                    overflow: hidden;
-
-                    &.middleR-enter-active, &.middleR-leave-active {
-                        transition: all 0.2s;
-                    }
-                    &.middleR-enter, &.middleR-leave-to {
-                        opacity: 0;
-                    }
-                    .lyric-wrapper {
-                        width: 80%;
-                        margin: 0 auto;
-                        overflow: hidden;
-                        text-align: center;
-                        .text {
-                            line-height: 40px;
-                            color: $color-text-ggg;
-                            font-size: $font-size-medium;
-                            &.current {
-                                color: #FFF;
-                            }
-                        }
-                        .no-lyric {
-                            line-height: 40px;
-                            margin-top: 60%;
-                            color: $color-text-ggg;
-                            font-size: $font-size-medium;
-                        }
-                    }
-                }
             }
 
             .bottom {
@@ -699,21 +600,6 @@ export default {
                 }
                 
             }           
-        }
-    }
-    .play {
-        animation: rotate 30s linear infinite;
-    }
-    .pause {
-        animation-play-state: paused;
-    }
-
-     @keyframes rotate {
-        0% {
-            transform: rotate(0);
-        }
-        100% {
-            transform: rotate(360deg);
         }
     }
 </style>

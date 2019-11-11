@@ -7,3 +7,19 @@ body{
     background: $color-background;
     color: $color-text;
 }
+
+.play {
+    animation: rotate 30s linear infinite;
+}
+.pause {
+    animation-play-state: paused;
+}
+
+@keyframes rotate {
+    0% {
+        transform: rotate(0);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
