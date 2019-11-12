@@ -6,7 +6,7 @@
 
 <script>
 import MusicList from '@/components/music-list/music-list';
-import {getRecommendListDetail} from '@/api/recommend';
+import {getPlaylistDetail} from '@/api/recommend';
 import {ERR_OK} from '@/utils/config';
 import {createRecommendListSong} from '@/utils/song';
 import {mapGetters} from 'vuex'
@@ -48,7 +48,7 @@ export default {
                 this.$router.push('/recommend')
                 return
             }
-             getRecommendListDetail(id).then((res) => {
+             getPlaylistDetail(id).then((res) => {
                 if (res.status === ERR_OK) {
                     this.songs = res.data.playlist.tracks.map((item) => {
                         return createRecommendListSong(item)

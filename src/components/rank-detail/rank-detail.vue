@@ -5,12 +5,14 @@
 </template>
 
 <script>
+import {getPlaylistDetail} from '@/api/recommend';
 import MusicList from '@/components/music-list/music-list';
 import {ERR_OK} from '@/utils/config';
 import {createSong} from '@/utils/song';
-import {mapGetters} from 'vuex'
+import {mapMutations,mapGetters} from 'vuex'
 
 export default {
+    props:['id'],
     components: {MusicList},
     computed:{
         title() {
@@ -36,10 +38,21 @@ export default {
         }
     },
     methods:{
-        _normalizeSongs(list){
-            if (!this.topList.id) {
+        ...mapMutations({
+            setTopList: 'SET_TOP_LIST'
+        }),
+        _getPlaylistDetail(){
+            getPlaylistDetail(this.id).then(res => {
+                if(res.data.code === 200){
+                    this.setTopList(res.data.playlist)
+                    this._normalizeSongs(res.data.playlist.tracks)
+                }
+            })
+            .catch(err => {
                 this.$router.push('/rank')
-            }
+            })
+        },
+        _normalizeSongs(list){
             let ret = []
             list.forEach((item) => {
                 ret.push(createSong(item))
@@ -48,8 +61,8 @@ export default {
         }
     },
     created(){
-        this._normalizeSongs(this.topList.tracks)
-    }
+        this._getPlaylistDetail()
+    },
 }
 </script>
 

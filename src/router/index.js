@@ -38,6 +38,7 @@ export default new Router({
       children:[
         {
           path:':id',
+          props: true,
           component: () => import('@/components/rank-detail/rank-detail.vue')
         }
       ]

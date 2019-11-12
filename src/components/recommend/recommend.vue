@@ -123,7 +123,7 @@ export default {
         _getRecommendList () {
             getRecommendList().then((res) => {
                 if (res.status === ERR_OK) {
-                    this.playList = res.data.result.slice(0,6);
+                    this.playList = res.data.result;
                 } else {
                     console.error('getRecommendList 获取失败')
                 }
@@ -135,7 +135,7 @@ export default {
                     let list = res.data.result.map((item) => {
                         return createRecommendSong(item)
                     });
-                    this.recommendMusic = list.slice(0,6);
+                    this.recommendMusic = list;
                 } else {
                     console.error('getRecommendMusic 获取失败')
                 }
@@ -185,7 +185,6 @@ export default {
                 position: relative;
                 box-sizing: border-box;
                 width: 100%;
-                text-align: center;
 
                 .title {
                     height: 65px;
@@ -200,7 +199,7 @@ export default {
                     display: inline-block;
                     position: relative;
                     box-sizing: border-box;
-                    width: 33%;
+                    width: 33.3%;
                     padding: 0 1%;
                     .icon {
                         position: relative;
@@ -248,7 +247,6 @@ export default {
                 margin-top: -20px;
                 box-sizing: border-box;
                 width: 100%;
-                text-align: center;
                 .title {
                     height: 65px;
                     line-height: 65px;
@@ -262,7 +260,7 @@ export default {
                     display: inline-block;
                     position: relative;
                     box-sizing: border-box;
-                    width: 33%;
+                    width: 33.3%;
                     padding: 0 1%;
                     .icon {
                         position: relative;

@@ -16,7 +16,10 @@ export function getRecommendMusic () {
     return axios.get(url)
 }
 
-export function getRecommendListDetail (id) {
-    const url = HOST + `/playlist/detail?id=${id}`
-    return axios.get(url)
-}
+export function getPlaylistDetail(id) {
+    return axios.get(`${HOST}/playlist/detail`, {
+      params: {
+        id
+      }
+    })
+  }

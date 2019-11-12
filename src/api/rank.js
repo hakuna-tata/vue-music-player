@@ -1,8 +1,7 @@
 import axios from 'axios'
 import {HOST} from '@/utils/config'
 
-export function getTop (id) {
-  const url = HOST + `/top/list?idx=${id}`
-
-  return axios.get(url)
+// 排行榜列表
+export function getToplistDetail() {
+  return axios.get(`${HOST}/toplist/detail`)
 }
