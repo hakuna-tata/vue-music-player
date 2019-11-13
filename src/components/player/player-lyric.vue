@@ -2,6 +2,15 @@
     <transition name="lyricPage">
         <scroll  class="root" ref="lyricList" v-show="currentShow === 'lyric'" :data="currentLyric">
             <div class="lyric-wrapper">
+                <div class="currentLyric" v-if="currentLyric">
+                    <p
+                        class="text"
+                        :class="{'current': lyricIndex === index}" 
+                        v-for="(line, index) in currentLyric" :key="index">
+                        {{ line.text }}
+                    </p>
+                </div>
+                 <p class="no-lyric" v-if="currentLyric === null">{{noLyric ? "暂无歌词" : "歌词加载中"}}</p>
             </div>
         </scroll>
     </transition>
@@ -16,8 +25,19 @@ export default {
             type: String,
             default: ""
         },
-        currentLyric:null
-    }
+        currentLyric: {
+            type: Array,
+            default: () => null
+        },
+        lyricIndex: {
+            type: Number,
+            default: 0
+        },
+        noLyric: {
+            type: Boolean,
+            default: false
+        }
+    },
 }
 </script>
 

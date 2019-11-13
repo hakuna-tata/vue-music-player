@@ -49,7 +49,6 @@ import {getToplistDetail} from '@/api/rank';
 import Scroll from '@/base/scroll/scroll';
 import Loading from '@/base/loading/loading';
 import {playlistMixin} from '@/utils/mixin';
-import {mapMutations} from 'vuex';
 
 export default {
     mixins: [playlistMixin],
@@ -65,9 +64,6 @@ export default {
         this._getToplistDetail()
     },
     methods: {
-        ...mapMutations({
-            setTopList: 'SET_TOP_LIST'
-        }),
         handlePlaylist (playlist) {
             const bottom = playlist.length > 0 ? '60px' : ''
             this.$refs.rank.style.bottom = bottom
@@ -181,7 +177,7 @@ export default {
                             width: 100%;
                             height: 35px;
                             border-radius: 3px;
-                            background: linear-gradient(rgba(109, 109, 109, 0.6),rgba(255, 255, 255, 0));
+                            background: linear-gradient(rgba(109, 109, 109, 0.4),rgba(255, 255, 255, 0.4));
                         }
                         img {
                             width: 100%;

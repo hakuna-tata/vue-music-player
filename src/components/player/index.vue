@@ -17,21 +17,14 @@
                     <player-cd 
                         :currentShow="currentShow" 
                         :playing="playing"
-                        :currentSongImage="currentSong.image" 
-                        :playingLyric="playingLyric">
+                        :currentSongImage="currentSong.image" >
                     </player-cd>
-                    <player-lyric :currentShow="currentShow"></player-lyric>
-                        <div>
-                            <div class="lyric-wrapper">
-                                <div class="currentLyric" v-if="currentLyric">
-                                    <p ref="lyricLine" class="text" :class="{'current': currentLineNum === index}"
-                                        v-for="(line, index) in currentLyric.lines" :key="line.key">
-                                        {{line.txt}}
-                                    </p>
-                                </div>
-                                <p class="no-lyric" v-if="currentLyric === null">{{upDatecurrentLyric}}</p>
-                            </div>
-                        </div>
+                    <player-lyric 
+                        :currentShow="currentShow" 
+                        :currentLyric="currentLyric"
+                        :lyricIndex="lyricIndex"
+                        :noLyric="noLyric">
+                    </player-lyric>
                 </div>
                 <div class="bottom">
                     <div class="progress-wrapper">
@@ -93,6 +86,7 @@ import playerLyric from './player-lyric';
 import Playlist from '@/components/play-list/play-list';
 import {playMode} from '@/utils/config';
 import {shuffle} from '@/utils/utl';
+import {parseLyric} from '@/utils/lyric';
 import {mapGetters, mapMutations, mapActions} from 'vuex';
 import {getSong, getLyric} from '@/api/song'
 
@@ -113,14 +107,6 @@ export default {
         },
         playIcon () {
             return this.playing ?  'icon-bofang' : 'icon-zanting'
-        },
-        upDatecurrentLyric () {
-            if (this.noLyric) {
-                return '暂无歌词'
-            }
-            if (!this.noLyric) {
-                return '歌词加载中'
-            }
         },
         ...mapGetters([
             'playlist',
@@ -146,7 +132,6 @@ export default {
         },
         url(newUrl){
             this.$refs.audio.src = newUrl;
-
             let timeStamp = setInterval(() => {
                 this.duration = this.$refs.audio.duration;
                 if (this.duration) {
@@ -165,9 +150,6 @@ export default {
                 newPlaying ? this.$refs.audio.play() : this.$refs.audio.pause()
             })
         },
-        currentTime () {
-            this.percent = this.currentTime / this.duration
-        }
     },
     data(){
         return{
@@ -177,11 +159,10 @@ export default {
             duration: 0,
             percent: 0,
             radius: 32,
-            currentLyric: null,
-            currentLineNum: 0,
-            currentShow: 'cd',
-            playingLyric: '',
-            noLyric: false
+            currentShow: "cd", // cd界面还是lyric界面
+            currentLyric: null, // 歌词
+            lyricIndex: 0, // 当前播放歌词下标
+            noLyric: false  // 是否有歌词
         }
     },
     methods:{
@@ -216,9 +197,6 @@ export default {
                 return
             }
             this.setPlayingState(!this.playing)
-            if (this.currentLyric) {
-                this.currentLyric.togglePlay()
-            }
         },
         changeMode(){
             const mode = (this.mode + 1) % 3;
@@ -274,9 +252,6 @@ export default {
             this.$refs.audio.currentTime = 0
             this.$refs.audio.play()
             this.setPlayingState(true)
-            if (this.currentLyric) {
-                this.currentLyric.seek(0)
-            }
         },
         ready () {
             this.songReady = true
@@ -286,7 +261,8 @@ export default {
             this.songReady = true
         },
         updateTime (e) {
-            this.currentTime = e.target.currentTime
+            this._showPercent(e.target.currentTime)
+            this._findLyricIndex(e.target.currentTime)
         },
         end(){
             if (this.mode === playMode.loop) {
@@ -308,9 +284,6 @@ export default {
             this.$refs.audio.currentTime = this.duration * percent;
             if (!this.playing) {
                 this.togglePlaying()
-            }
-            if (this.currentLyric) {
-                this.currentLyric.seek(this.duration * percent * 1000)
             }
         },
         toggleFavorite(song){
@@ -345,38 +318,46 @@ export default {
         },
         _getLyric(id){
             this.noLyric = false;
-            if (this.currentLyric) {
-                this.currentLyric.stop();
-                this.currentLyric = null;
+            if(this.currentLyric){
+                this.currentLyric = null
             }
             getLyric(id).then(res => {
-                this.currentLyric = new Lyric(res.data.lrc.lyric, this.handleLyric);
-                if (this.playing) {
-                    this.currentLyric.play()
+                if (res.status === 200) {
+                    if (res.data.nolyric) {
+                        this.nolyric = true
+                    } else {
+                        this.nolyric = false
+                        this.currentLyric = parseLyric(res.data.lrc.lyric)
+                    }
                 }
-            }).catch(() => {
+            }).catch( err => {
                 this.currentLyric = null
                 this.noLyric = true
-                this.currentLineNum = 0
             })
         },
-        handleLyric({lineNum, txt}){
-            this.currentLineNum = lineNum;
-            if (lineNum > 5) {
-                let lineEl = this.$refs.lyricLine[lineNum - 5]
-                this.$refs.lyricList.scrollToElement(lineEl, 1000)
-            } else {
-                this.$refs.lyricList.scrollTo(0, 0, 1000)
-            }
-            this.playingLyric = txt
+        _showPercent(newTime){
+            this.currentTime = newTime
+            this.percent = newTime / this.duration
         },
-         _resetCurrentIndex (list) {
+        _findLyricIndex(newTime){
+            if(this.noLyric || !this.currentLyric.length){
+                return
+            }
+            let lyricIndex = 0
+            for (let i = 0; i < this.currentLyric.length; i++) {
+                if (newTime > this.currentLyric[i].time) {
+                    lyricIndex = i
+                }
+            }
+            this.lyricIndex = lyricIndex
+        }, 
+        _resetCurrentIndex (list) {
             let index = list.findIndex((item) => {
                 return item.id === this.currentSong.id
             })
             this.setCurrentIndex(index)
         },
-    },
+    }
 }
 </script>
 
