@@ -17,13 +17,15 @@
                     <player-cd 
                         :currentShow="currentShow" 
                         :playing="playing"
+                        :playingLyric="playingLyric"
                         :currentSongImage="currentSong.image" >
                     </player-cd>
-                    <player-lyric 
+                    <player-lyric
                         :currentShow="currentShow" 
                         :currentLyric="currentLyric"
                         :lyricIndex="lyricIndex"
-                        :noLyric="noLyric">
+                        :noLyric="noLyric"
+                        @setLyric="setLyric">
                     </player-lyric>
                 </div>
                 <div class="bottom">
@@ -159,6 +161,7 @@ export default {
             duration: 0,
             percent: 0,
             radius: 32,
+            playingLyric: "", // 当前播放的歌词
             currentShow: "cd", // cd界面还是lyric界面
             currentLyric: null, // 歌词
             lyricIndex: 0, // 当前播放歌词下标
@@ -311,6 +314,9 @@ export default {
         stopMusic(){
             this.$refs.audio.pause()
         },
+        setLyric(text){
+            this.playingLyric = text
+        },
         _getSong (id) {
             getSong(id).then((res) => {
                 this.url = res.data.data[0].url
@@ -340,7 +346,7 @@ export default {
             this.percent = newTime / this.duration
         },
         _findLyricIndex(newTime){
-            if(this.noLyric || !this.currentLyric.length){
+            if(this.noLyric || !this.currentLyric){
                 return
             }
             let lyricIndex = 0

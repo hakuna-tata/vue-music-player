@@ -6,6 +6,9 @@
                     <img :src="currentSongImage" class="image">
                 </div>
             </div>
+            <div class="playing-lyric-wrapper">
+                <div class="playing-lyric">{{playingLyric ? playingLyric : ""}}</div>
+            </div>
         </div>
     </transition>
 </template>
@@ -25,7 +28,11 @@ export default {
             type: String,
             default: ""
         },
-    }
+        playingLyric:{
+            type: String,
+            required: true
+        }
+    },
 }
 </script>
 
@@ -65,6 +72,19 @@ export default {
                     border-radius: 50%;
                 }
             }  
+        }
+
+        .playing-lyric-wrapper{
+            width: 80%;
+            margin: 30px auto 0 auto;
+            overflow: hidden;
+            text-align: center;
+            .playing-lyric{
+                height: 20px;
+                line-height: 20px;
+                font-size: $font-size-medium;
+                color: $color-text-l;
+            }
         }
     }
 </style>

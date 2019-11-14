@@ -4,6 +4,7 @@
             <div class="lyric-wrapper">
                 <div class="currentLyric" v-if="currentLyric">
                     <p
+                        ref="lyricLine"
                         class="text"
                         :class="{'current': lyricIndex === index}" 
                         v-for="(line, index) in currentLyric" :key="index">
@@ -38,6 +39,17 @@ export default {
             default: false
         }
     },
+    watch:{
+        lyricIndex(newIndex){
+            if(newIndex > 5){
+                let lineEl = this.$refs.lyricLine[newIndex - 5]
+                this.$refs.lyricList.scrollToElement(lineEl, 1000)
+            }else {
+                this.$refs.lyricList.scrollTo(0, 0, 1000)
+            }
+            this.$emit("setLyric",this.currentLyric[newIndex].text)
+        }
+    }
 }
 </script>
 

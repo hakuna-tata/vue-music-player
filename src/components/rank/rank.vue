@@ -3,7 +3,7 @@
         <scroll class="toplist" ref="scroll">
             <div>
                 <div class="official">
-                    <div class="title">官方榜</div>
+                    <div class="title" v-show="yunTopList.length">官方榜</div>
                     <ul>
                         <li class="item"  v-for="item in yunTopList" :key="item.id" @click="selectItem(item)">
                             <div class="icon">
@@ -19,7 +19,7 @@
                     </ul>
                 </div>
                 <div class="more">
-                    <div class="title">更多榜单</div>
+                    <div class="title" v-show="moreTopList.length">更多榜单</div>
                     <ul>
                         <li class="list" v-for="item in moreTopList" :key="item.id">
                             <div class="icon" @click="selectItem(item)">
