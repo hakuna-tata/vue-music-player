@@ -6,7 +6,7 @@
 > vue-music-player
 
 ``` bash
-git clone https://github.com/FFFXUE/vue-music-player.git //下载 vue-music-player
+git clone https://github.com/hakuna-tata/vue-music-player.git //下载 vue-music-player
 
 cd vue-music-player // 进入 vue-music-player 播放器目录
 
